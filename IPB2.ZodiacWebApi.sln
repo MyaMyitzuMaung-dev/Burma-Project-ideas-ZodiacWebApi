@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36121.58 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPB2.ZodiacWebApi", "IPB2.ZodiacWebApi\IPB2.ZodiacWebApi.csproj", "{B7BFCAD5-D1EE-4E20-BFAE-D7E8B0BD8A65}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPB2.ZodiacWebApi.Database", "IPB2.ZodiacWebApi.Database\IPB2.ZodiacWebApi.Database.csproj", "{1ACD6287-95C3-4321-9D74-C46CF9BF05E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPB2.ZodiacConsole", "IPB2.ZodiacConsole\IPB2.ZodiacConsole.csproj", "{E20C1CEC-71AE-46F4-91E0-12815D57439D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B7BFCAD5-D1EE-4E20-BFAE-D7E8B0BD8A65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7BFCAD5-D1EE-4E20-BFAE-D7E8B0BD8A65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7BFCAD5-D1EE-4E20-BFAE-D7E8B0BD8A65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7BFCAD5-D1EE-4E20-BFAE-D7E8B0BD8A65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ACD6287-95C3-4321-9D74-C46CF9BF05E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ACD6287-95C3-4321-9D74-C46CF9BF05E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ACD6287-95C3-4321-9D74-C46CF9BF05E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ACD6287-95C3-4321-9D74-C46CF9BF05E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E20C1CEC-71AE-46F4-91E0-12815D57439D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E20C1CEC-71AE-46F4-91E0-12815D57439D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E20C1CEC-71AE-46F4-91E0-12815D57439D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E20C1CEC-71AE-46F4-91E0-12815D57439D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6E117A2C-C6C3-4847-97FC-49CC2E1AB9BA}
+	EndGlobalSection
+EndGlobal
