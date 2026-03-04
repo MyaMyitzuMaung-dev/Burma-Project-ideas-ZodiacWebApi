@@ -10,116 +10,102 @@ namespace IPB2.ZodiacWebApi.Controllers
     public class ZodiacController : ControllerBase
     {
         private readonly AppDbContext _context;
+
         public ZodiacController(AppDbContext context)
         {
             _context = context;
         }
 
+        // GET: api/zodiac
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var data = await _context.ZodiacSigns
-                .Select(x => new
-                {
-                    x.Id,
-                    x.Name,
-                    x.MyanmarMonth,
-                    x.ZodiacSignImageUrl,
-                    x.ZodiacSign2ImageUrl,
-                    x.Dates,
-                    x.Element,
-                    x.ElementImageUrl,
-                    x.LifePurpose,
-                    x.Loyal,
-                    x.RepresentativeFlower,
-                    x.Angry,
-                    x.Character,
-                    x.PrettyFeatures,
-                    Traits = x.Traits.Select(t => new
-                    {
-                        t.Name,
-                        t.Percentage
-                    }).ToList()
-                })
-                .ToListAsync();
-
+            var data = await ProjectZodiac(_context.ZodiacSigns).ToListAsync();
             return Ok(data);
         }
 
+        // GET: api/zodiac/horoscope?birthDate=1990-08-15
         [HttpGet("horoscope")]
         public async Task<IActionResult> GetHoroscope(DateTime birthDate)
         {
-            var day = birthDate.Day;
-            var month = birthDate.Month;
-
-            string zodiacName;
-
-            if ((month == 3 && day >= 21) || (month == 4 && day <= 19))
-                zodiacName = "Aries";
-            else if ((month == 4 && day >= 20) || (month == 5 && day <= 20))
-                zodiacName = "Taurus";
-            else if ((month == 5 && day >= 21) || (month == 6 && day <= 20))
-                zodiacName = "Gemini";
-            else if ((month == 6 && day >= 21) || (month == 7 && day <= 22))
-                zodiacName = "Cancer";
-            else if ((month == 7 && day >= 23) || (month == 8 && day <= 22))
-                zodiacName = "Leo";
-            else if ((month == 8 && day >= 23) || (month == 9 && day <= 22))
-                zodiacName = "Virgo";
-            else if ((month == 9 && day >= 23) || (month == 10 && day <= 22))
-                zodiacName = "Libra";
-            else if ((month == 10 && day >= 23) || (month == 11 && day <= 21))
-                zodiacName = "Scorpio";
-            else if ((month == 11 && day >= 22) || (month == 12 && day <= 21))
-                zodiacName = "Sagittarius";
-            else if ((month == 12 && day >= 22) || (month == 1 && day <= 19))
-                zodiacName = "Capricorn";
-            else if ((month == 1 && day >= 20) || (month == 2 && day <= 18))
-                zodiacName = "Aquarius";
-            else if ((month == 2 && day >= 19) || (month == 3 && day <= 20))
-                zodiacName = "Pisces";
-            else
+            var zodiacName = GetZodiacName(birthDate);
+            if (zodiacName == null)
                 return BadRequest("Invalid birth date.");
 
-            // Fetch from database including traits
-            //var zodiac = await _context.ZodiacSigns
-            //                           .Include(x => x.Traits)
-            //                           .FirstOrDefaultAsync(x => x.Name == zodiacName);
+            var zodiac = await ProjectZodiac(_context.ZodiacSigns
+                                      .Where(z => z.Name == zodiacName))
+                                      .FirstOrDefaultAsync();
 
-            //if (zodiac == null)
-            //    return NotFound("Zodiac sign not found in database.");
+            if (zodiac == null)
+                return NotFound("Zodiac sign not found");
 
-            //return Ok(zodiac);
-            var zodiac = await _context.ZodiacSigns
-            .Where(x => x.Name == zodiacName)
-            .Select(x => new
+            return Ok(zodiac);
+        }
+
+        // GET: api/zodiac/search?query=Cancer
+        [HttpGet("search")]
+        public async Task<IActionResult> Search([FromQuery] string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return BadRequest("Query cannot be empty.");
+
+            var results = await ProjectZodiac(_context.ZodiacSigns
+                                     .Where(z => EF.Functions.Like(z.Name, $"%{query}%")))
+                                     .ToListAsync();
+
+            if (!results.Any())
+                return NotFound("No matching zodiac signs found.");
+
+            return Ok(results);
+        }
+
+        private IQueryable<object> ProjectZodiac(IQueryable<ZodiacSign> query)
+        {
+            return query.Select(z => new
             {
-                x.Id,
-                x.Name,
-                x.MyanmarMonth,
-                x.ZodiacSignImageUrl,
-                x.ZodiacSign2ImageUrl,
-                x.Dates,
-                x.Element,
-                x.ElementImageUrl,
-                x.LifePurpose,
-                x.Loyal,
-                x.RepresentativeFlower,
-                x.Angry,
-                x.Character,
-                x.PrettyFeatures,
-                Traits = x.Traits.Select(t => new
+                z.Id,
+                z.Name,
+                z.MyanmarMonth,
+                z.ZodiacSignImageUrl,
+                z.ZodiacSign2ImageUrl,
+                z.Dates,
+                z.Element,
+                z.ElementImageUrl,
+                z.LifePurpose,
+                z.Loyal,
+                z.RepresentativeFlower,
+                z.Angry,
+                z.Character,
+                z.PrettyFeatures,
+                Traits = z.Traits.Select(t => new
                 {
                     t.Name,
                     t.Percentage
                 })
-            })
-            .FirstOrDefaultAsync();
+            });
+        }
 
-                    if (zodiac == null)
-                        return NotFound("Zodiac sign not found");
+        private string? GetZodiacName(DateTime birthDate)
+        {
+            int day = birthDate.Day;
+            int month = birthDate.Month;
 
-                    return Ok(zodiac);
-                }
+            return (month, day) switch
+            {
+                (3, >= 21) or (4, <= 19) => "Aries",
+                (4, >= 20) or (5, <= 20) => "Taurus",
+                (5, >= 21) or (6, <= 20) => "Gemini",
+                (6, >= 21) or (7, <= 22) => "Cancer",
+                (7, >= 23) or (8, <= 22) => "Leo",
+                (8, >= 23) or (9, <= 22) => "Virgo",
+                (9, >= 23) or (10, <= 22) => "Libra",
+                (10, >= 23) or (11, <= 21) => "Scorpio",
+                (11, >= 22) or (12, <= 21) => "Sagittarius",
+                (12, >= 22) or (1, <= 19) => "Capricorn",
+                (1, >= 20) or (2, <= 18) => "Aquarius",
+                (2, >= 19) or (3, <= 20) => "Pisces",
+                _ => null
+            };
+        }
     }
 }
